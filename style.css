@@ -37,3 +37,36 @@
             animation: slowBlinkColor 3.5s ease-in-out infinite;
         }
 
+    .hidden { display: none !important; }
+
+    /* Fix scroll: Lock body only when login is visible */
+    body:has(#login-view:not(.hidden)) {
+        overflow: hidden;
+        height: 100vh;
+    }
+
+    /* Login View: Fullscreen and interactive */
+    #login-view {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: #0f172a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000; /* High z-index to stay on top */
+    }
+
+    /* Sticky table styles */
+    .sticky-col-1 { position: sticky; left: 0; z-index: 10; background-color: white; }
+    .sticky-col-2 { position: sticky; left: 280px; z-index: 10; background-color: white; }
+
+    @keyframes slowBlinkColor {
+        0%, 100% { opacity: 1; color: #0f172a; }
+        25% { color: #1d4ed8; }
+        50% { opacity: 0.4; color: #b91c1c; }
+        75% { color: #047857; }
+    }
+    .animate-header-pulse { animation: slowBlinkColor 3.5s ease-in-out infinite; }
