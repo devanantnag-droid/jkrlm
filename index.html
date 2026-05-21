@@ -6,47 +6,6 @@
     <title>Udhampur District Progress Management</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
-    <style>
-        .hidden { display: none; }
-        
-        /* Smooth scrolling sticky table alignments */
-        .sticky-col-1 {
-            position: -webkit-sticky;
-            position: sticky;
-            left: 0;
-            z-index: 10;
-            background-color: white;
-        }
-        .sticky-col-2 {
-            position: -webkit-sticky;
-            position: sticky;
-            left: 280px; 
-            z-index: 10;
-            background-color: white;
-        }
-
-        /* Custom color shifting pulse for headers */
-        @keyframes slowBlinkColor {
-            0%, 100% { 
-                opacity: 1; 
-                color: #0f172a; /* Slate 900 */
-            }
-            25% {
-                color: #1d4ed8; /* Blue 700 */
-            }
-            50% { 
-                opacity: 0.4;   /* Soft dimming */
-                color: #b91c1c; /* Red 700 */
-            }
-            75% {
-                color: #047857; /* Emerald 700 */
-            }
-        }
-        .animate-header-pulse {
-            animation: slowBlinkColor 3.5s ease-in-out infinite;
-        }
-    </style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 pb-16 min-h-screen">
 
