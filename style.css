@@ -6,20 +6,24 @@ body.login-active {
     height: 100vh;
 }
 
-body.login-view {overflow: hidden;
-    height: 100vh;}
 
 #login-view {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    /* Use dvh for better mobile browser support */
+    height: 100dvh; 
     background-color: #0f172a;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    /* Ensures content can be scrolled if it exceeds the screen height */
+    overflow-y: auto;
+    /* Optional: adds padding so content doesn't touch screen edges on tiny phones */
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 
