@@ -1,40 +1,49 @@
-
-.hidden { display: none !important; }
-
-body.login-active {
-    overflow: hidden;
-    height: 100vh;
+/* --- Utilities --- */
+.hidden { 
+    display: none !important; 
 }
 
+/* --- Body Control --- */
+body.login-active {
+    overflow: hidden;
+    height: 100dvh; /* Use dynamic height for mobile consistency */
+}
 
+/* --- Login View --- */
 #login-view {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: 100dvh; /* Updated for mobile address bar support */
     background-color: #0f172a;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    overflow-y: auto; /* Allows scrolling if content is taller than screen */
+    padding: 20px;
+    box-sizing: border-box;
 }
 
+/* --- Table Sticky Columns --- */
+/* Ensure your table has border-collapse: separate; for this to work */
+.sticky-col-1,
+.sticky-col-2 {
+    position: sticky;
+    z-index: 10;
+    background-color: white; /* Required for background opacity */
+}
 
 .sticky-col-1 { 
-    position: sticky; 
     left: 0; 
-    z-index: 10; 
-    background-color: white; 
 }
+
 .sticky-col-2 { 
-    position: sticky; 
-    left: 280px; 
-    z-index: 10; 
-    background-color: white; 
+    left: 280px; /* Ensure this matches min-w of first column */
 }
 
-
+/* --- Animations --- */
 @keyframes slowBlinkColor {
     0%, 100% { opacity: 1; color: #0f172a; }
     25% { color: #1d4ed8; }
