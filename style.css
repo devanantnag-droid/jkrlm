@@ -6,7 +6,7 @@
 /* --- Body Control --- */
 body.login-active {
     overflow: hidden;
-    height: 100dvh;
+    height: 100dvh; /* Use dynamic height for mobile consistency */
 }
 
 /* --- Login View --- */
@@ -15,42 +15,33 @@ body.login-active {
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100dvh;
+    height: 100dvh; /* Updated for mobile address bar support */
     background-color: #0f172a;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    overflow-y: auto;
+    overflow-y: auto; /* Allows scrolling if content is taller than screen */
     padding: 20px;
     box-sizing: border-box;
 }
 
-/* --- Table Sticky Logic --- */
-/* The container MUST have overflow: auto and a defined height */
-.table-container {
-    overflow: auto;
-    max-height: 80vh; 
-}
-
-/* Fixes the header row to the top */
-.sticky-header-row th {
-    position: sticky;
-    top: 0;
-    z-index: 20; /* Stays above body content */
-    background-color: white;
-}
-
-/* Sticky columns for side scrolling */
+/* --- Table Sticky Columns --- */
+/* Ensure your table has border-collapse: separate; for this to work */
 .sticky-col-1,
 .sticky-col-2 {
     position: sticky;
-    z-index: 30; /* Higher than header row to handle intersections */
-    background-color: white;
+    z-index: 10;
+    background-color: white; /* Required for background opacity */
 }
 
-.sticky-col-1 { left: 0; }
-.sticky-col-2 { left: 280px; }
+.sticky-col-1 { 
+    left: 0; 
+}
+
+.sticky-col-2 { 
+    left: 280px; /* Ensure this matches min-w of first column */
+}
 
 /* --- Animations --- */
 @keyframes slowBlinkColor {
