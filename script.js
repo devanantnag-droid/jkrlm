@@ -505,60 +505,6 @@
             `;
         }
 
-function getColumnWiseRanking() {
-    if (!globalCachedDashboardData || !globalCachedDashboardData.achievements) return [];
-    
-    // We sum achievements (Index 4) grouped by Block Name (Index 2)
-    const BLOCK_COL_INDEX = 2; 
-    const VALUE_COL_INDEX = 4;
-    
-    let rankings = {};
-    const achievements = globalCachedDashboardData.achievements.slice(1);
-    
-    achievements.forEach(row => {
-        let blockName = row[BLOCK_COL_INDEX] ? row[BLOCK_COL_INDEX].toString().toUpperCase().trim() : "UNKNOWN";
-        let value = parseInt(row[VALUE_COL_INDEX]) || 0;
-        
-        rankings[blockName] = (rankings[blockName] || 0) + value;
-    });
-
-    // Return as sorted array
-    return Object.entries(rankings)
-        .map(([name, total]) => ({ name, total }))
-        .sort((a, b) => b.total - a.total);
-}
-
-function renderRankingColumn() {
-    const container = document.getElementById('admin-ranking-container');
-    if (!container) return;
-
-    const rankings = getColumnWiseRanking();
-    
-    if (rankings.length === 0) {
-        container.innerHTML = `<p class="text-sm text-slate-400 p-4">No data available.</p>`;
-        return;
-    }
-
-    container.innerHTML = `
-        <div class="mt-6">
-            <h3 class="font-bold text-slate-900 mb-4 uppercase text-xs tracking-widest">Performance Leaderboard</h3>
-            <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-                ${rankings.map((block, index) => `
-                    <div class="flex-shrink-0 w-48 bg-white border border-slate-200 p-4 rounded-2xl shadow-sm flex items-center gap-3">
-                        <div class="w-10 h-10 flex items-center justify-center ${index === 0 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'} rounded-full text-sm font-black">
-                            ${index + 1}
-                        </div>
-                        <div class="overflow-hidden">
-                            <p class="text-[9px] font-bold text-slate-400 uppercase truncate">Block</p>
-                            <p class="text-sm font-semibold text-slate-800 truncate">${block.name}</p>
-                            <p class="text-xs font-black text-blue-600">${block.total.toLocaleString()}</p>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-    `;
-}
         function renderAdminUI() {
             if(!globalCachedDashboardData) return;
 
