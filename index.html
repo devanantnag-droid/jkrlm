@@ -168,17 +168,28 @@
             <header class="pt-2 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-4">
                 <div>
                     <h1 class="text-2xl font-bold tracking-tight animate-header-pulse">
-                        DISTRICT UDHAMPUR | JKRLM  </br>TARGETS & ACHIEVEMENTS FINANCIAL YEAR 2026-27
+                        DISTRICT UDHAMPUR | JKRLM  </br>TARGETS & ACHIEVEMENTS FY 2026-27
                     </h1>
                     <p class="text-slate-500 text-sm mt-1">Consolidated District Dashboard Matrix & Entry Trackers</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
+				    <div>
+					<label class="block text-[10px] text-red-500 font-bold uppercase mb-0.5">Select Theme</label>
+					<select id="admin-domain-filter" class="border p-2 text-xs rounded-lg bg-white font-medium text-slate-700 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 min-w-[160px]">
+							<option value="ALL">All Domains</option>
+							<option value="FI">FI</option>
+							<option value="FARM">FARM</option>
+							<option value="NON FARM">NON FARM</option>
+							<option value="IBCB">IBCB</option>
+					</select>
+					</div>
                     <div>
-                        <label class="block text-[10px] text-slate-400 font-bold uppercase mb-0.5">Select CD Block</label>
+                        <label class="block text-[10px] text-red-500 font-bold uppercase mb-0.5">Select CD Block</label>
                         <select id="admin-block-filter" onchange="renderAdminUI()" class="border p-2 text-xs rounded-lg bg-white font-medium text-slate-700 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 min-w-[160px]">
                             <option value="ALL">All Blocks Combined</option>
                         </select>
                     </div>
+				
                     <div>
                         <label class="block text-[10px] text-slate-400 font-bold uppercase mb-0.5">Filter Dashboard Date</label>
                         <input type="date" id="admin-dashboard-date" onchange="renderAdminUI()" class="border p-2 text-xs rounded-lg bg-white font-medium text-slate-700 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
@@ -191,14 +202,13 @@
 
                         <button onclick="exportAdminDataToExcel()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-lg cursor-pointer transition flex items-center gap-1.5 shadow-sm">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                            Download Excel Report
+                            Download Report
                         </button>
 
                         <button onclick="logout()" class="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 px-4 rounded-lg cursor-pointer transition">Logout</button>
                     </div>
                 </div>
             </header>
-
             <div id="admin-summary-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 hidden">
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Filtered Day Records Count</p>
@@ -221,6 +231,8 @@
                     <p class="text-[11px] text-slate-500 mt-0.5">Total aggregated lifetime progress records</p>
                 </div>
             </div>
+			<div id="admin-ranking-container">
+    </div>
         </div>
 
         <div class="mt-6">
