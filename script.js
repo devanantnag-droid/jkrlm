@@ -865,12 +865,12 @@ function renderRankingColumn() {
     container.innerHTML = `
         <div class="mt-6">
             <h3 class="font-bold text-slate-900 mb-3 uppercase text-xs tracking-widest inline-block pb-1" 
-           style="background-image: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899); 
+    style="background-image: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899); 
            background-size: 100% 3px; 
            background-repeat: no-repeat; 
            background-position: bottom;">
-           LIVE BLOCK RANKINGS
-            </h3>
+  LIVE BLOCK RANKINGS
+</h3>
             <div class="flex flex-row gap-4 overflow-x-auto pb-4">
                 ${rankings.map((block, index) => `
                     <div class="flex items-center bg-white border border-slate-200 p-3 rounded-xl shadow-sm min-w-[180px]">
