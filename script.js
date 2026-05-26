@@ -505,6 +505,60 @@
             `;
         }
 
+function getColumnWiseRanking() {
+    if (!globalCachedDashboardData || !globalCachedDashboardData.achievements) return [];
+    
+    // We sum achievements (Index 4) grouped by Block Name (Index 2)
+    const BLOCK_COL_INDEX = 2; 
+    const VALUE_COL_INDEX = 4;
+    
+    let rankings = {};
+    const achievements = globalCachedDashboardData.achievements.slice(1);
+    
+    achievements.forEach(row => {
+        let blockName = row[BLOCK_COL_INDEX] ? row[BLOCK_COL_INDEX].toString().toUpperCase().trim() : "UNKNOWN";
+        let value = parseInt(row[VALUE_COL_INDEX]) || 0;
+        
+        rankings[blockName] = (rankings[blockName] || 0) + value;
+    });
+
+    // Return as sorted array
+    return Object.entries(rankings)
+        .map(([name, total]) => ({ name, total }))
+        .sort((a, b) => b.total - a.total);
+}
+
+function renderRankingColumn() {
+    const container = document.getElementById('admin-ranking-container');
+    if (!container) return;
+
+    const rankings = getColumnWiseRanking();
+    
+    if (rankings.length === 0) {
+        container.innerHTML = `<p class="text-sm text-slate-400 p-4">No data available.</p>`;
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="mt-6">
+            <h3 class="font-bold text-slate-900 mb-4 uppercase text-xs tracking-widest">Performance Leaderboard</h3>
+            <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+                ${rankings.map((block, index) => `
+                    <div class="flex-shrink-0 w-48 bg-white border border-slate-200 p-4 rounded-2xl shadow-sm flex items-center gap-3">
+                        <div class="w-10 h-10 flex items-center justify-center ${index === 0 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'} rounded-full text-sm font-black">
+                            ${index + 1}
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="text-[9px] font-bold text-slate-400 uppercase truncate">Block</p>
+                            <p class="text-sm font-semibold text-slate-800 truncate">${block.name}</p>
+                            <p class="text-xs font-black text-blue-600">${block.total.toLocaleString()}</p>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
         function renderAdminUI() {
             if(!globalCachedDashboardData) return;
 
@@ -702,56 +756,150 @@
 
                 tableElement.innerHTML = headerHtml + bodyHtml;
             }
-
+renderRankingColumn();
             document.getElementById("admin-loading").classList.add("hidden");
             document.getElementById("admin-summary-cards").classList.remove("hidden");
+			
+			// Inside renderAdminUI function:
+const rankingData = getBlockRanking();
+const rankingContainer = document.getElementById('admin-ranking-container'); // You will create this HTML
+
+if (rankingContainer) {
+    rankingContainer.innerHTML = `
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mt-6">
+            <h3 class="font-bold text-slate-900 mb-4 uppercase text-sm">Performance Leaderboard</h3>
+            ${rankingData.map((b, i) => `
+                <div class="flex items-center justify-between py-2 border-b last:border-0">
+                    <span class="text-sm font-medium text-slate-600">${i + 1}. ${b.name}</span>
+                    <span class="text-sm font-black text-blue-600">${b.total.toLocaleString()}</span>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
         }
 
         function exportAdminDataToExcel() {
-            if(!globalCachedDashboardData) return;
+    if(!globalCachedDashboardData) return;
+    
+    const selectedBlock = document.getElementById("admin-block-filter").value;
+    const selectedDomain = document.getElementById("admin-domain-filter").value;
+    const selectedDate = document.getElementById("admin-dashboard-date").value;
+    const filename = `Report_${selectedBlock}_${selectedDomain}_${selectedDate}.xlsx`;
+    
+    let workbook = XLSX.utils.book_new();
+    let dataRows = [["Metric ID", "Parameter", "Domain", "Target", "Daily Value", "Cumulative Total"]];
+    
+    const metrics = globalCachedDashboardData.metrics.slice(1);
+    const achievements = globalCachedDashboardData.achievements.slice(1);
+    
+    metrics.forEach(m => {
+        // Filter by Domain
+        const metricDomain = m[2] ? m[2].toString().toUpperCase().trim() : "GENERAL";
+        if (selectedDomain !== "ALL" && metricDomain !== selectedDomain) return;
+
+        let colIdx = blockHeaderMapping[selectedBlock];
+        let targetValue = (selectedBlock !== "ALL" && colIdx !== undefined) ? (parseInt(m[colIdx]) || 0) : 0;
+        
+        let totalProgress = 0, dailyProgress = 0;
+        
+        achievements.forEach(a => {
+            let recordBlock = a[2].toString().toUpperCase().trim();
+            // Filter by Block
+            if (selectedBlock !== "ALL" && recordBlock !== selectedBlock) return;
             
-            const selectedBlock = document.getElementById("admin-block-filter").value;
-            const selectedDate = document.getElementById("admin-dashboard-date").value;
-            const filename = `Udhampur_Progress_Report_${selectedBlock}_${selectedDate}.xlsx`;
-            
-            let workbook = XLSX.utils.book_new();
-            
-            if (selectedBlock === "ALL") {
-                const tableElement = document.getElementById("dynamic-admin-table");
-                if(!tableElement || tableElement.innerHTML === "") {
-                    triggerPopupModal("Export Warning", "Please load dashboard metrics first before launching spreadsheet generation.", "error");
-                    return;
-                }
-                let worksheet = XLSX.utils.table_to_sheet(tableElement);
-                XLSX.utils.book_append_sheet(workbook, worksheet, "All Blocks Matrix");
-            } else {
-                let dataRows = [["Metric ID", "Parameter Metric Description", "Domain Classification", "Target Assigned", "Selected Date Value", "Cumulative Progress Total"]];
-                const metrics = globalCachedDashboardData.metrics.slice(1);
-                const achievements = globalCachedDashboardData.achievements.slice(1);
-                
-                metrics.forEach(m => {
-                    if(!m[0]) return;
-                    let colIdx = blockHeaderMapping[selectedBlock];
-                    let targetValue = (colIdx !== undefined) ? (parseInt(m[colIdx]) || 0) : 0;
-                    let totalProgress = 0, dailyProgress = 0;
-                    
-                    achievements.forEach(a => {
-                        if(a[3] === m[0] && a[2].toString().toUpperCase().trim() === selectedBlock) {
-                            let val = parseInt(a[4]) || 0;
-                            totalProgress += val;
-                            if(a[1].toString().split("T")[0] === selectedDate) dailyProgress += val;
-                        }
-                    });
-                    dataRows.push([m[0], m[1], m[2] || 'General', targetValue, dailyProgress, totalProgress]);
-                });
-                let worksheet = XLSX.utils.aoa_to_sheet(dataRows);
-                XLSX.utils.book_append_sheet(workbook, worksheet, `${selectedBlock} Summary`);
+            if(a[3] === m[0]) {
+                let val = parseInt(a[4]) || 0;
+                totalProgress += val;
+                if(a[1].toString().split("T")[0] === selectedDate) dailyProgress += val;
             }
-            
-            XLSX.writeFile(workbook, filename);
-        }
+        });
+        
+        dataRows.push([m[0], m[1], metricDomain, targetValue, dailyProgress, totalProgress]);
+    });
+    
+    let worksheet = XLSX.utils.aoa_to_sheet(dataRows);
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Filtered Report");
+    XLSX.writeFile(workbook, filename);
+}
 
         function logout() {
             sessionStorage.clear();
             location.reload();
         }
+/*Rnk*/
+function getColumnWiseRanking() {
+    if (!globalCachedDashboardData || !globalCachedDashboardData.achievements) return [];
+    
+    // Assuming Column 2 is Block Name and Column 4 is Achievement Value
+    const BLOCK_COL_INDEX = 2; 
+    const VALUE_COL_INDEX = 4;
+    
+    let rankings = {};
+    const achievements = globalCachedDashboardData.achievements.slice(1);
+    
+    achievements.forEach(row => {
+        let blockName = row[BLOCK_COL_INDEX] ? row[BLOCK_COL_INDEX].toString().toUpperCase().trim() : "UNKNOWN";
+        let value = parseInt(row[VALUE_COL_INDEX]) || 0;
+        
+        rankings[blockName] = (rankings[blockName] || 0) + value;
+    });
+
+    // Return as sorted array
+    return Object.entries(rankings)
+        .map(([name, total]) => ({ name, total }))
+        .sort((a, b) => b.total - a.total);
+}
+
+function renderRankingColumn() {
+    const container = document.getElementById('admin-ranking-container');
+    if (!container) return;
+
+    const rankings = getDistrictWideRanking();
+    
+    if (rankings.length === 0) {
+        container.innerHTML = `<p class="text-sm text-slate-400 p-4">No live data available.</p>`;
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="mt-6">
+            <h3 class="font-bold text-slate-900 mb-3 uppercase text-xs tracking-widest">LIVE BLOCK RANKINGS</h3>
+            <div class="flex flex-row gap-4 overflow-x-auto pb-4">
+                ${rankings.map((block, index) => `
+                    <div class="flex items-center bg-white border border-slate-200 p-3 rounded-xl shadow-sm min-w-[180px]">
+                        <div class="w-8 h-8 flex items-center justify-center ${index === 0 ? 'bg-amber-100 text-amber-700' : index === 1 ? 'bg-slate-100 text-slate-600' : 'bg-slate-50 text-slate-400'} rounded-full text-xs font-black mr-3">
+                            ${index + 1}
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Block</p>
+                            <p class="text-sm font-semibold text-slate-800">${block.name}</p>
+                        </div>
+                        <div class="text-right ml-2">
+                            <p class="text-[9px] font-bold text-blue-500 uppercase tracking-wider leading-none">Score</p>
+                            <p class="text-sm font-black text-slate-900">${block.total.toLocaleString()}</p>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+function getDistrictWideRanking() {
+    if (!globalCachedDashboardData || !globalCachedDashboardData.achievements) return [];
+    
+    let blockTotals = {};
+    const achievements = globalCachedDashboardData.achievements.slice(1);
+    
+    // Sum achievements (Index 4) for each Block Name (Index 2)
+    achievements.forEach(row => {
+        let blockName = row[2] ? row[2].toString().toUpperCase().trim() : "UNKNOWN";
+        let value = parseInt(row[4]) || 0;
+        blockTotals[blockName] = (blockTotals[blockName] || 0) + value;
+    });
+
+    // Convert to array and sort descending
+    return Object.entries(blockTotals)
+        .map(([name, total]) => ({ name, total }))
+        .sort((a, b) => b.total - a.total);
+}
