@@ -1047,3 +1047,7 @@ function getDistrictWideRanking() {
         .map(([name,total]) => ({ name,total }))
         .sort((a,b) => b.total - a.total);
 }
+function logout() {
+    sessionStorage.clear();
+    location.reload();
+}
