@@ -1053,8 +1053,8 @@ function logout() {
 }
 const captions = [
     "Nasha Mukth Bharat",
-    "Agriculture & FARM Activities",
-    "Skill Development Training",
+    "Discussions",
+    "Shg Meetings",
     "District Achievement Event"
 ];
 
