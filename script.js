@@ -1051,27 +1051,4 @@ function logout() {
     sessionStorage.clear();
     location.reload();
 }
-function updateOnlineCount() {
 
-    registerOnlineTab();
-    cleanupOnlineTabs();
-
-    const count = Object.keys(localStorage)
-        .filter(key => key.startsWith("tab_"))
-        .length;
-
-    const el =
-        document.getElementById("online-users-count");
-
-    if (el) {
-        el.innerText = count;
-    }
-}
-
-setInterval(updateOnlineCount, 5000);
-
-window.addEventListener("beforeunload", () => {
-    localStorage.removeItem(ONLINE_TAB_ID);
-});
-
-updateOnlineCount();
