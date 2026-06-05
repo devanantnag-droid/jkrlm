@@ -1051,4 +1051,29 @@ function logout() {
     sessionStorage.clear();
     location.reload();
 }
+const captions = [
+    "Nasha Mukth Bharat",
+    "Agriculture & FARM Activities",
+    "Skill Development Training",
+    "District Achievement Event"
+];
 
+let currentSlide = 0;
+
+function rotateAchievements() {
+
+    const slides = document.querySelectorAll(".achievement-slide");
+
+    if(!slides.length) return;
+
+    slides[currentSlide].classList.remove("active");
+
+    currentSlide = (currentSlide + 1) % slides.length;
+
+    slides[currentSlide].classList.add("active");
+
+    document.getElementById("achievement-caption").innerText =
+        captions[currentSlide];
+}
+
+setInterval(rotateAchievements, 4000);
